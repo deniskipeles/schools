@@ -1,0 +1,414 @@
+[
+  {
+      "id": "qrxrk9r0pm0t42e",
+      "name": "companies",
+      "type": "base",
+      "system": false,
+      "schema": [
+          {
+              "id": "panqmb8c",
+              "name": "name",
+              "type": "text",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": null,
+                  "max": null,
+                  "pattern": ""
+              }
+          },
+          {
+              "id": "lwt3iu1q",
+              "name": "description",
+              "type": "editor",
+              "system": false,
+              "required": false,
+              "options": {}
+          },
+          {
+              "id": "a2yoyxqd",
+              "name": "social_media",
+              "type": "json",
+              "system": false,
+              "required": false,
+              "options": {}
+          },
+          {
+              "id": "zc4rq9zw",
+              "name": "photos",
+              "type": "file",
+              "system": false,
+              "required": false,
+              "options": {
+                  "maxSelect": 99,
+                  "maxSize": 5242880,
+                  "mimeTypes": [],
+                  "thumbs": [
+                      "200x0"
+                  ],
+                  "protected": false
+              }
+          }
+      ],
+      "indexes": [],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
+  },
+  {
+      "id": "sxuhwma8i6c0sdb",
+      "name": "view_albums",
+      "type": "view",
+      "system": false,
+      "schema": [
+          {
+              "id": "omddd8k7",
+              "name": "name",
+              "type": "text",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": null,
+                  "max": null,
+                  "pattern": ""
+              }
+          },
+          {
+              "id": "csb5tdd2",
+              "name": "artist",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "_pb_users_auth_",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "tk8n6uto",
+              "name": "photos_count",
+              "type": "json",
+              "system": false,
+              "required": false,
+              "options": {}
+          },
+          {
+              "id": "2ini6qpl",
+              "name": "image",
+              "type": "json",
+              "system": false,
+              "required": false,
+              "options": {}
+          },
+          {
+              "id": "feud3ut3",
+              "name": "photo_id",
+              "type": "json",
+              "system": false,
+              "required": false,
+              "options": {}
+          }
+      ],
+      "indexes": [],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {
+          "query": "SELECT a.id, a.album_name AS name,a.artist, a.created, a.updated,\n  SUM(JSON_ARRAY_LENGTH(p.photos)) as photos_count,\n  JSON_EXTRACT((SELECT photos FROM arts WHERE album_id = a.id LIMIT 1), '$[0]') AS image,\n  (SELECT id FROM arts WHERE album_id = a.id LIMIT 1) as photo_id\nFROM albums a\nLEFT JOIN arts p ON a.id = p.album_id\nGROUP BY a.id;"
+      }
+  },
+  {
+      "id": "9al16htuthjfoor",
+      "name": "view_artists",
+      "type": "view",
+      "system": false,
+      "schema": [
+          {
+              "id": "q8xr7i9p",
+              "name": "name",
+              "type": "text",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": null,
+                  "max": null,
+                  "pattern": ""
+              }
+          },
+          {
+              "id": "qmkyzgwp",
+              "name": "avatar",
+              "type": "file",
+              "system": false,
+              "required": false,
+              "options": {
+                  "maxSelect": 1,
+                  "maxSize": 5242880,
+                  "mimeTypes": [
+                      "image/jpeg",
+                      "image/png",
+                      "image/svg+xml",
+                      "image/gif",
+                      "image/webp"
+                  ],
+                  "thumbs": null,
+                  "protected": false
+              }
+          },
+          {
+              "id": "mwiwtfqk",
+              "name": "username",
+              "type": "text",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": null,
+                  "max": null,
+                  "pattern": ""
+              }
+          },
+          {
+              "id": "dgofawsi",
+              "name": "photos_count",
+              "type": "json",
+              "system": false,
+              "required": false,
+              "options": {}
+          },
+          {
+              "id": "4vp0ony1",
+              "name": "albums_count",
+              "type": "number",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": null,
+                  "max": null
+              }
+          }
+      ],
+      "indexes": [],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {
+          "query": "SELECT users.id, users.name, users.avatar, users.username, users.created, users.updated,\n  SUM(JSON_ARRAY_LENGTH(arts.photos)) as photos_count,\n  COUNT(albums.id) as albums_count\nFROM users \n  JOIN albums ON users.id = albums.artist\n  JOIN arts ON arts.artist= users.id\nGROUP BY users.id;"
+      }
+  },
+  {
+      "id": "_pb_users_auth_",
+      "name": "users",
+      "type": "auth",
+      "system": false,
+      "schema": [
+          {
+              "id": "users_name",
+              "name": "name",
+              "type": "text",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": null,
+                  "max": null,
+                  "pattern": ""
+              }
+          },
+          {
+              "id": "users_avatar",
+              "name": "avatar",
+              "type": "file",
+              "system": false,
+              "required": false,
+              "options": {
+                  "maxSelect": 1,
+                  "maxSize": 5242880,
+                  "mimeTypes": [
+                      "image/jpeg",
+                      "image/png",
+                      "image/svg+xml",
+                      "image/gif",
+                      "image/webp"
+                  ],
+                  "thumbs": null,
+                  "protected": false
+              }
+          },
+          {
+              "id": "l3g6nd5z",
+              "name": "description",
+              "type": "text",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": null,
+                  "max": 200,
+                  "pattern": ""
+              }
+          },
+          {
+              "id": "stjpydlx",
+              "name": "phone_number",
+              "type": "text",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": 8,
+                  "max": 16,
+                  "pattern": ""
+              }
+          }
+      ],
+      "indexes": [],
+      "listRule": "id = @request.auth.id",
+      "viewRule": "id = @request.auth.id",
+      "createRule": "",
+      "updateRule": "id = @request.auth.id",
+      "deleteRule": "id = @request.auth.id",
+      "options": {
+          "allowEmailAuth": true,
+          "allowOAuth2Auth": true,
+          "allowUsernameAuth": true,
+          "exceptEmailDomains": null,
+          "manageRule": null,
+          "minPasswordLength": 5,
+          "onlyEmailDomains": null,
+          "requireEmail": false
+      }
+  },
+  {
+      "id": "a2vuhm7lyjqretr",
+      "name": "arts",
+      "type": "base",
+      "system": false,
+      "schema": [
+          {
+              "id": "tarfl09i",
+              "name": "photos",
+              "type": "file",
+              "system": false,
+              "required": false,
+              "options": {
+                  "maxSelect": 99,
+                  "maxSize": 5242880,
+                  "mimeTypes": [
+                      "image/png",
+                      "image/vnd.mozilla.apng",
+                      "image/webp",
+                      "image/jpeg",
+                      "image/gif"
+                  ],
+                  "thumbs": [
+                      "200x0"
+                  ],
+                  "protected": false
+              }
+          },
+          {
+              "id": "5gnvjslu",
+              "name": "caption",
+              "type": "text",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": null,
+                  "max": null,
+                  "pattern": ""
+              }
+          },
+          {
+              "id": "3qkuyfcv",
+              "name": "artist",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "_pb_users_auth_",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "ic8hcdlp",
+              "name": "album_id",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "xnj4o83osuymwta",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "eysr14cy",
+              "name": "private",
+              "type": "bool",
+              "system": false,
+              "required": false,
+              "options": {}
+          }
+      ],
+      "indexes": [],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": "@request.auth.id!=''",
+      "updateRule": "@request.auth.id=artist.id",
+      "deleteRule": "@request.auth.id=artist.id",
+      "options": {}
+  },
+  {
+      "id": "xnj4o83osuymwta",
+      "name": "albums",
+      "type": "base",
+      "system": false,
+      "schema": [
+          {
+              "id": "hxeglbof",
+              "name": "album_name",
+              "type": "text",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": null,
+                  "max": null,
+                  "pattern": ""
+              }
+          },
+          {
+              "id": "af2ctiof",
+              "name": "artist",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "_pb_users_auth_",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          }
+      ],
+      "indexes": [],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": "@request.auth.id!=''",
+      "updateRule": "@request.auth.id=artist.id",
+      "deleteRule": "@request.auth.id=artist.id",
+      "options": {}
+  }
+]

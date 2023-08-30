@@ -1,146 +1,95 @@
 <script>
-  import { goto } from '$app/navigation';
-  import { CONSTANTS } from '$lib/CONSTANTS';
-  import { school } from '$lib/store/school';
-	import '$lib/styles.css';
-  import { supabase } from '$lib/supabase';
-	
-	const default_image = "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/lotus.webp"
-	/** @type {import('./$types').PageData} */
-	export let data;
+  import {
+    Card,
+    Button,
+    Label,
+    Input,
+    Checkbox,
+    Breadcrumb,
+    BreadcrumbItem,
+    Spinner,
+  } from "flowbite-svelte";
+  import { onMount } from "svelte";
+  import { goto } from "$app/navigation";
 
-	let admission = "";
-	let password = "";
+  /** @type {import('./$types').PageData} */
+  export let data;
+  onMount(() => {
+    if (data?.user) {
+      goto("/account", { replaceState: true });
+    }
+  });
+  /** @type {import('./$types').ActionData} */
+  export let form;
+  let loading = false;
 
-
-
-	async function loginStudent(params) {
-		
-		let { data: identities, error } = await supabase
-			.from('identities')
-			.select("*")
-
-			// Filters
-			.eq('identity', admission)
-			.eq('school_id', CONSTANTS.school)
-			.limit(1)
-			.single()
-		// console.log(identities)
-		if(identities){
-			let { data: user, error:loginError } = await supabase.auth.signInWithPassword({
-				email:identities.email,
-				password
-			})
-			// console.log(user,loginError)
-			if(user.session){
-				if (identities.student==true) {
-					localStorage.setItem("student",identities.identity)
-				}
-				goto("/",{replaceState:true})
-			}
-		}
-
-	}
+  import { applyAction, enhance } from "$app/forms";
+  import { pb } from "$lib/pocketbase";
+  import ErrorComp from "$lib/components/ErrorComp.svelte";
 </script>
 
 <svelte:head>
-	<title>{$school.name} Login Page</title>
-	<meta name="description" content="HTML, dynamically rendered in a city near you" />
+  <title>Q&A Form</title>
+  <meta name="description" content="Add Questions And Answers Form" />
 </svelte:head>
 
-<main>
+<Breadcrumb class="pt-16 py-8">
+  <BreadcrumbItem href="/" home>Home</BreadcrumbItem>
+  <BreadcrumbItem>Login</BreadcrumbItem>
+</Breadcrumb>
 
-	<section class="h-full gradient-form bg-gray-200 md:h-screen">
-		<div class="container py-12 px-6 h-full">
-		  <div class="flex justify-center items-center flex-wrap h-full g-6 text-gray-800">
-			<div class="xl:w-10/12">
-			  <div class="block bg-white shadow-lg rounded-lg">
-				<div class="lg:flex lg:flex-wrap g-0">
-				  <div class="lg:w-6/12 px-4 md:px-0">
-					<div class="md:p-12 md:mx-6">
-					  <div class="text-center">
-						<img
-						  class="mx-auto w-48"
-						  src={$school ? $school.logo : default_image}
-						  alt="logo"
-						/>
-						<h4 class="text-xl font-semibold mt-1 mb-12 pb-1">We are {$school ? $school.logo_name : "School"}</h4>
-					  </div>
-					  <form on:submit|preventDefault={loginStudent}>
-						<p class="mb-4">Please login with your child admission</p>
-						<div class="mb-4">
-						  <input
-							type="text"
-							class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-							id="exampleFormControlInput1"
-							placeholder="Username"
-							bind:value={admission}
-						  />
-						</div>
-						<div class="mb-4">
-						  <input
-							type="password"
-							class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-							id="exampleFormControlInput1"
-							placeholder="Password"
-							bind:value={password}
-						  />
-						</div>
-						<div class="text-center pt-1 mb-12 pb-1">
-						  <button
-							class="inline-block px-6 py-2.5 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full mb-3"
-							type="submit"
-							data-mdb-ripple="true"
-							data-mdb-ripple-color="light"
-							style="
-							  background: linear-gradient(
-								to right,
-								#ee7724,
-								#d8363a,
-								#dd3675,
-								#b44593
-							  );
-							"
-						  >
-							Log in
-						  </button>
-						  <a class="text-gray-500" href="#!">Forgot password?</a>
-						</div>
-						<div class="flex items-center justify-between pb-6">
-						  <p class="mb-0 mr-2">Don't have an account?</p>
-						  <button
-							type="button"
-							class="inline-block px-6 py-2 border-2 border-red-600 text-red-600 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out"
-							data-mdb-ripple="true"
-							data-mdb-ripple-color="light"
-						  >
-							Danger
-						  </button>
-						</div>
-					  </form>
-					</div>
-				  </div>
-				  <div
-					class="lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none"
-					style="
-					  background: linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593);
-					"
-				  >
-					<div class="text-white px-4 py-6 md:p-12 md:mx-6">
-					  <h4 class="text-xl font-semibold mb-6">{$school ? $school.name : "School"}</h4>
-					  <p class="text-sm">
-						{$school ? $school.description : "School"}
-					  </p>
-					</div>
-				  </div>
-				</div>
-			  </div>
-			</div>
-		  </div>
-		</div>
-	  </section>
-</main>
+{#if form?.error}
+  <ErrorComp error={form?.error} />
+{/if}
 
-<!-- <Footer /> -->
+<div class="text-center">
+  <Card>
+    <form
+      class="flex flex-col space-y-6"
+      method="POST"
+      use:enhance={() => {
+        loading = true;
+        return async ({ result }) => {
+          pb.authStore.loadFromCookie(document.cookie);
+          await applyAction(result);
+          loading = false;
+        };
+      }}
+    >
+      <h3 class="text-xl font-medium text-gray-900 dark:text-white p-0">
+        Sign in to our platform
+      </h3>
+      <Label class="space-y-2">
+        <span>Email / Username</span>
+        <Input type="text" name="email" placeholder="user123" required />
+      </Label>
+      <Label class="space-y-2">
+        <span>Your password</span>
+        <Input type="password" name="password" placeholder="•••••" required />
+      </Label>
 
-
+      <div class="flex items-start">
+        <Checkbox>Remember me</Checkbox>
+        <a
+          href="/"
+          class="ml-auto text-sm text-blue-700 hover:underline dark:text-blue-500"
+          >Lost password?</a
+        >
+      </div>
+      {#if loading}
+        <Button id="b2" class="-mb-2">
+          <Spinner />loading...
+        </Button>
+      {:else}
+        <Button type="submit" class="w-full">Login to your account</Button>
+      {/if}
+      <div class="text-sm font-medium text-gray-500 dark:text-gray-300">
+        Not registered? <a
+          href="/register"
+          class="text-blue-700 hover:underline dark:text-blue-500"
+          >Create account</a
+        >
+      </div>
+    </form>
+  </Card>
+</div>

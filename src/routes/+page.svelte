@@ -1,89 +1,38 @@
-<script>
-  import SchoolPhotosList from '$lib/components/SchoolPhotosList.svelte';
+<script lang="ts">
+  import ErrorComp from "$lib/components/ErrorComp.svelte";
+  import { pb } from "$lib/pocketbase";
+  import { Breadcrumb, BreadcrumbItem, Gallery } from "flowbite-svelte";
+  import type { Admin, Record } from "pocketbase";
 
-	/** @type {import('./$types').PageData} */
-	export let data;
-  
+  /** @type {import('./$types').PageData} */
+  export let data: {
+    company: Record;
+    user: Record | Admin | null;
+    error: any;
+  };
+  $: background = data?.company?.logo
+    ? pb.files.getUrl(data?.company, data?.company?.logo, { thumb: "100x100" })
+    : "/images/img1.jpg";
 </script>
 
 <svelte:head>
-	<title>SvelteKit on the edge</title>
-	<meta name="description" content="HTML, dynamically rendered in a city near you" />
+  <title>{data?.company?.name}</title>
+  <meta name="description" content={data?.company?.description} />
 </svelte:head>
 
+<Breadcrumb class="pt-20 py-8">
+  <BreadcrumbItem href="/" home>Home</BreadcrumbItem>
+</Breadcrumb>
 
-
-
-
-
-<div class="max-w-4xl">
-  <SchoolPhotosList />
-</div>
-
-<section class="mb-20 text-gray-700  px-8" >
-    <div class="text-center md:max-w-xl lg:max-w-3xl mx-auto">
-      <h3 class="text-3xl font-bold mb-6 text-gray-800">Teachers</h3>
-      <p class="mb-6 pb-2 md:mb-12 md:pb-0">
-        We are proud of our hard working teachers.
-      </p>
-    </div>
-  
-    <div class="grid md:grid-cols-3 gap-6 text-center">
-      <div>
-        <div class="block rounded-lg shadow-lg bg-white">
-          <div class="overflow-hidden rounded-t-lg h-28" style="background-color: #9d789b;"></div>
-          <div class="w-24 -mt-12 overflow-hidden border border-2 border-white rounded-full mx-auto bg-white">
-            <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(1).webp" />
-          </div>
-          <div class="p-6">
-            <h4 class="text-2xl font-semibold mb-4">Maria Smantha</h4>
-            <hr />
-            <p class="mt-4">
-              <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="quote-left" class="w-6 pr-2 inline-block" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                <path fill="currentColor" d="M464 256h-80v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8c-88.4 0-160 71.6-160 160v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48zm-288 0H96v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8C71.6 32 0 103.6 0 192v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48z"></path>
-              </svg>
-              Lorem ipsum dolor sit amet eos adipisci, consectetur adipisicing elit.
-            </p>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="block rounded-lg shadow-lg bg-white">
-          <div class="overflow-hidden rounded-t-lg h-28" style="background-color: #7a81a8;"></div>
-          <div class="w-24 -mt-12 overflow-hidden border border-2 border-white rounded-full mx-auto bg-white">
-            <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(2).webp" />
-          </div>
-          <div class="p-6">
-            <h4 class="text-2xl font-semibold mb-4">Lisa Cudrow</h4>
-            <hr />
-            <p class="mt-4">
-              <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="quote-left" class="w-6 pr-2 inline-block" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                <path fill="currentColor" d="M464 256h-80v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8c-88.4 0-160 71.6-160 160v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48zm-288 0H96v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8C71.6 32 0 103.6 0 192v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48z"></path>
-              </svg>
-              Neque cupiditate assumenda in maiores
-              repudi mollitia architecto.
-            </p>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="block rounded-lg shadow-lg bg-white">
-          <div class="overflow-hidden rounded-t-lg h-28" style="background-color: #6d5b98;"></div>
-          <div class="w-24 -mt-12 overflow-hidden border border-2 border-white rounded-full mx-auto bg-white">
-            <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(9).webp" />
-          </div>
-          <div class="p-6">
-            <h4 class="text-2xl font-semibold mb-4">John Smith</h4>
-            <hr />
-            <p class="mt-4">
-              <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="quote-left" class="w-6 pr-2 inline-block" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                <path fill="currentColor" d="M464 256h-80v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8c-88.4 0-160 71.6-160 160v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48zm-288 0H96v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8C71.6 32 0 103.6 0 192v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48z"></path>
-              </svg>
-              Delectus impedit saepe officiis ab
-              aliquam repellat rem unde ducimus.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+{#if data?.error}
+  <ErrorComp error={data?.error} />
+{:else if data?.company?.page_bg}
+  <div
+    class="dark:text-white w-full h-full bg-center bg-cover opacity-50 bg-slate-800"
+    style={`background-image: url(${background});`}
+  >
+    {@html data?.company?.description}
+  </div>
+{:else}
+  {@html data?.company?.description}
+{/if}
